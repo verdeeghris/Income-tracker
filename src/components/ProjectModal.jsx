@@ -152,6 +152,7 @@ export default function ProjectModal({
   );
   const [color, setColor] = useState(instance?.color || PALETTE[0].id);
   const [isPaid, setIsPaid] = useState(Boolean(instance?.isPaid));
+  const [isGph, setIsGph] = useState(Boolean(instance?.is_gph));
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [copyDates, setCopyDates] = useState(() => new Set());
@@ -203,6 +204,7 @@ export default function ProjectModal({
       amount: Number(amount),
       color,
       isPaid,
+      isGph,
       copyDates: Array.from(copyDates).sort(),
     });
   };
@@ -405,6 +407,8 @@ export default function ProjectModal({
               сумма уже пришла на счёт
             </span>
           </label>
+
+          <label className="flex cursor-pointer select-none items-center gap-2.5 py-1"><input type="checkbox" checked={isGph} onChange={(event) => setIsGph(event.target.checked)} className="peer sr-only" /><span className="flex h-5 w-5 items-center justify-center rounded-md border border-stone-300 bg-stone-50 peer-checked:border-stone-900 peer-checked:bg-stone-900 dark:border-white/20 dark:bg-white/5 dark:peer-checked:border-white dark:peer-checked:bg-white"><Check className="h-3.5 w-3.5 text-white dark:text-zinc-900" /></span><span className="text-sm font-bold">Внесено в ГПХ</span><span className="ml-auto text-[11px] font-medium text-stone-400 dark:text-zinc-500">уже есть в договоре</span></label>
 
           <div className="flex items-center justify-between gap-3 border-t border-stone-100 pt-4 dark:border-white/5">
             {isEdit ? (

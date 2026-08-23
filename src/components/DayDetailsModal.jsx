@@ -7,7 +7,7 @@ import { formatMoney } from '../finance';
 // Список проектов конкретного дня: открывается по клику на день,
 // в котором уже есть проекты. Отсюда можно отредактировать любой проект
 // или добавить новый.
-export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, onAdd }) {
+export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, onAddProject, onAddLesson }) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -87,12 +87,7 @@ export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, o
           </ul>
         )}
 
-        <button type="button" onClick={onAdd} className={`${BTN_PRIMARY_CLASS} mt-4 w-full py-2.5`}>
-          <span className="inline-flex items-center gap-1.5">
-            <Plus className="h-3.5 w-3.5" />
-            Добавить проект
-          </span>
-        </button>
+        <div className="mt-4 grid grid-cols-2 gap-2"><button type="button" onClick={onAddProject} className={`${BTN_PRIMARY_CLASS} py-2.5`}><span className="inline-flex items-center gap-1.5"><Plus className="h-3.5 w-3.5" />Проект</span></button><button type="button" onClick={onAddLesson} className="rounded-xl border border-stone-200 px-3 py-2.5 text-xs font-bold dark:border-white/10">Урок</button></div>
       </div>
     </div>
   );
