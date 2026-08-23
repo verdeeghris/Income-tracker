@@ -40,11 +40,11 @@ function Field({ label, children }) {
   );
 }
 
-function presetNextWeeks(anchorKey) {
+export function presetNextWeeks(anchorKey) {
   return [1, 2, 3, 4].map((week) => addDays(anchorKey, week * 7));
 }
 
-function presetMonthEnd(anchorKey) {
+export function presetMonthEnd(anchorKey) {
   const date = parseDateKey(anchorKey);
   const lastDay = daysInMonth(date.getFullYear(), date.getMonth());
   const result = [];
@@ -56,7 +56,7 @@ function presetMonthEnd(anchorKey) {
   return result;
 }
 
-function CopyPicker({ anchorKey, selectedSet, onToggle }) {
+export function CopyPicker({ anchorKey, selectedSet, onToggle }) {
   const [viewKey, setViewKey] = useState(anchorKey);
   const view = parseDateKey(viewKey);
   const viewYear = view.getFullYear();
@@ -185,14 +185,10 @@ export default function ProjectModal({
 
   // Перезаписывание active-пресета на новый при нажатии
   const applyPreset = (keys) => {
-    const slicedKeys = keys.slice(0, MAX_COPIES);
+    const uniqueKeys = [...new Set(keys)].filter((key) => key !== dateKey);
     setCopyDates((previous) => {
-      const isAlreadyActive =
-        previous.size === slicedKeys.length &&
-        slicedKeys.every((k) => previous.has(k));
-
-      // Если нажали на уже полностью активный пресет — сбрасываем его, иначе полностью перезаписываем
-      return isAlreadyActive ? new Set() : new Set(slicedKeys);
+      const isAlreadyActive = uniqueKeys.length === previous.size && uniqueKeys.every((key) => previous.has(key));
+      return isAlreadyActive ? new Set() : new Set(uniqueKeys);
     });
   };
 

@@ -87,7 +87,7 @@ export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, o
           </ul>
         )}
 
-        <div className="mt-4 grid grid-cols-2 gap-2"><button type="button" onClick={onAddProject} className={`${BTN_PRIMARY_CLASS} py-2.5`}><span className="inline-flex items-center gap-1.5"><Plus className="h-3.5 w-3.5" />Проект</span></button><button type="button" onClick={onAddLesson} className="rounded-xl border border-stone-200 px-3 py-2.5 text-xs font-bold dark:border-white/10">Урок</button></div>
+        <div className="mt-4 grid grid-cols-2 gap-2"><button type="button" onClick={onAddProject} className={`${BTN_PRIMARY_CLASS} py-2.5`}><span className="inline-flex items-center gap-1.5"><Plus className="h-3.5 w-3.5" />Проект</span></button><button type="button" onClick={onAddLesson} className={`${BTN_PRIMARY_CLASS} py-2.5`}>Урок</button></div>
       </div>
     </div>
   );
