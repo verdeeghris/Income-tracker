@@ -25,15 +25,20 @@ export function computeStats(instances) {
   let grossTotal = 0;
   let paidGross = 0;
   let pendingGross = 0;
+  let taxablePaidGross = 0;
+  let taxablePendingGross = 0;
 
   const unpaidList = [];
   instances.forEach((instance) => {
     const amount = Number(instance.amount) || 0;
     grossTotal += amount;
+    const taxable = instance.type !== 'lesson';
     if (instance.isPaid) {
       paidGross += amount;
+      if (taxable) taxablePaidGross += amount;
     } else {
       pendingGross += amount;
+      if (taxable) taxablePendingGross += amount;
       unpaidList.push(instance);
     }
   });
@@ -42,11 +47,11 @@ export function computeStats(instances) {
     count: instances.length,
     grossTotal,
     paidGross,
-    paidNet: netOf(paidGross),
-    paidTax: taxOf(paidGross),
+    paidNet: paidGross - taxOf(taxablePaidGross),
+    paidTax: taxOf(taxablePaidGross),
     pendingGross,
-    pendingNet: netOf(pendingGross),
-    pendingTax: taxOf(pendingGross),
+    pendingNet: pendingGross - taxOf(taxablePendingGross),
+    pendingTax: taxOf(taxablePendingGross),
     unpaidList,
   };
 }
