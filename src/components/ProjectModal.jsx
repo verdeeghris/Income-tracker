@@ -152,7 +152,7 @@ export default function ProjectModal({
   );
   const [color, setColor] = useState(instance?.color || PALETTE[0].id);
   const [isPaid, setIsPaid] = useState(Boolean(instance?.isPaid));
-  const [isGph, setIsGph] = useState(Boolean(instance?.is_gph));
+  const [isGph, setIsGph] = useState(Boolean(instance?.isGph ?? instance?.is_gph));
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [copyDates, setCopyDates] = useState(() => new Set());

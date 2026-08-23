@@ -46,7 +46,7 @@ function DayCell({
   isExpanded,
   onToggleExpand,
   onSelectDay,
-  onOpenProject,
+  onOpenInstance,
   isDark,
   dimmed,
 }) {
@@ -119,7 +119,7 @@ function DayCell({
               key={instance.instanceKey}
               instance={instance}
               isDark={isDark}
-              onClick={onOpenProject}
+              onClick={onOpenInstance}
             />
           ))}
         </div>
@@ -153,7 +153,7 @@ function DayCell({
             key={instance.instanceKey}
             instance={instance}
             isDark={isDark}
-            onClick={onOpenProject}
+            onClick={onOpenInstance}
           />
         ))}
 
@@ -184,7 +184,7 @@ function DayCell({
 
       {mode === 'day' && instances.length === 0 && (
         <div className='mt-3 flex flex-1 items-center justify-center rounded-xl border border-dashed border-stone-300 px-4 py-8 text-center text-xs font-medium text-stone-400 dark:border-white/10 dark:text-zinc-500'>
-          Нет проектов — нажмите, чтобы добавить
+          Нет записей — нажмите, чтобы добавить
         </div>
       )}
     </div>
@@ -198,7 +198,7 @@ export default function CalendarGrid({
   byDate,
   isDark,
   onSelectDay,
-  onOpenProject,
+  onOpenInstance,
 }) {
   const [expandedDays, setExpandedDays] = useState(() => new Set())
 
@@ -245,7 +245,7 @@ export default function CalendarGrid({
           isExpanded={false}
           onToggleExpand={toggleExpand}
           onSelectDay={onSelectDay}
-          onOpenProject={onOpenProject}
+          onOpenInstance={onOpenInstance}
           isDark={isDark}
           dimmed={false}
         />
@@ -263,7 +263,7 @@ export default function CalendarGrid({
               isExpanded={expandedDays.has(dateKey)}
               onToggleExpand={toggleExpand}
               onSelectDay={onSelectDay}
-              onOpenProject={onOpenProject}
+              onOpenInstance={onOpenInstance}
               isDark={isDark}
               dimmed={false}
             />
@@ -285,7 +285,7 @@ export default function CalendarGrid({
                   isExpanded={expandedDays.has(dateKey)}
                   onToggleExpand={toggleExpand}
                   onSelectDay={onSelectDay}
-                  onOpenProject={onOpenProject}
+                  onOpenInstance={onOpenInstance}
                   isDark={isDark}
                   dimmed={parseDateKey(dateKey).getMonth() !== selectedMonth}
                 />

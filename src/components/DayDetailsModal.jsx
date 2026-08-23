@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Check, Plus, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { BTN_PRIMARY_CLASS, paletteOf } from '../constants';
 import { formatLongDate, pluralizeLabel } from '../dateUtils';
 import { formatMoney } from '../finance';
@@ -51,7 +51,7 @@ export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, o
 
         {instances.length === 0 ? (
           <p className="rounded-xl border border-dashed border-stone-200 px-4 py-6 text-center text-xs font-medium text-stone-400 dark:border-white/10 dark:text-zinc-500">
-            В этот день пока нет проектов
+            В этот день пока нет записей
           </p>
         ) : (
           <ul className="-mx-1 max-h-[46vh] space-y-0.5 overflow-y-auto scrollbar-none">
@@ -87,7 +87,7 @@ export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, o
           </ul>
         )}
 
-        <div className="mt-4 grid grid-cols-2 gap-2"><button type="button" onClick={onAddProject} className={`${BTN_PRIMARY_CLASS} py-2.5`}><span className="inline-flex items-center gap-1.5"><Plus className="h-3.5 w-3.5" />Проект</span></button><button type="button" onClick={onAddLesson} className={`${BTN_PRIMARY_CLASS} py-2.5`}>Урок</button></div>
+        <div className="mt-4 grid grid-cols-2 gap-2"><button type="button" onClick={onAddProject} className={`${BTN_PRIMARY_CLASS} py-2.5`}>Добавить проект</button><button type="button" onClick={onAddLesson} className={`${BTN_PRIMARY_CLASS} py-2.5`}>Добавить урок</button></div>
       </div>
     </div>
   );
