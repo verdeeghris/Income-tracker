@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Резервируем место под вертикальный скроллбар всегда.
+   Благодаря этому страница не «прыгает» влево-вправо, когда скроллбар
+   появляется (режим «Месяц») или исчезает (блокировка скролла модалкой). */
+html {
+  scrollbar-gutter: stable;
+}
+
+:root {
+  /* Чуть приглушённый тёплый фон — белые карточки не «резали» глаза */
+  --app-bg: #efebe3;
+  --card: #fcfbf8;
+  --muted-placeholder: #a39b90;
+}
+
+.dark {
+  --app-bg: #121214;
+  --card: #1b1b20;
+  --muted-placeholder: #6d6d75;
+}
+
+body {
+  background: var(--app-bg);
+  transition: background-color 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-placeholder);
+  opacity: 1;
+}
+
+/* Нативные пункты <select>: без этого они невидимы в тёмной теме */
+option {
+  background-color: #fcfbf8;
+  color: #1c1917;
+}
+
+.dark option {
+  background-color: #232329;
+  color: #e4e4e7;
+}
+
+/* Скрытый скроллбар с сохранением прокрутки (ряд шаблонов в модалке) */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Анимации ---------- */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.18s ease-out both;
+}
+
+.animate-pop-in {
+  animation: pop-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.2s ease-out both;
+}
+
+.animate-rise-in {
+  animation: rise-in 0.25s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background-color: #F3F4F6; /* Серый контрастный фон для светлой темы */
+  color: #111827;
+}
+
+html.dark body {
+  background-color: #09090B; /* Тёмный фон */
+  color: #F9FAFB;
+}
