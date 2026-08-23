@@ -25,12 +25,12 @@ export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, o
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-stone-950/45 p-4 backdrop-blur-sm animate-fade-in sm:items-center"
+      className="modal-overlay"
       onClick={onClose}
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-sm rounded-2xl border border-stone-200 bg-[var(--card)] p-5 shadow-2xl animate-pop-in dark:border-white/10"
+        className="modal-sheet max-w-sm"
       >
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
