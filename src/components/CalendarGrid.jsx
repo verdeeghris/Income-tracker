@@ -87,11 +87,11 @@ function DayCell({
     <div
       role='button'
       tabIndex={0}
-      onClick={() => { if (!dimmed || instances.length > 0) onSelectDay(dateKey) }}
+      onClick={() => { if (!dimmed) onSelectDay(dateKey) }}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          if (!dimmed || instances.length > 0) onSelectDay(dateKey)
+          if (!dimmed) onSelectDay(dateKey)
         }
       }}
       className={cellClasses}
@@ -134,15 +134,16 @@ function DayCell({
       ) : (
         <div className='mt-1.5 flex flex-wrap items-center gap-1 sm:hidden'>
           {visibleDots.map((instance) => (
-            <span
+            <button
               key={instance.instanceKey}
+              type='button'
               title={`${instance.title} · ${formatMoney(instance.amount)}`}
-              className={`h-2.5 w-2.5 shrink-0 aspect-square rounded-full transition-colors duration-200 ${
+              aria-label={`Открыть ${instance.title}`}
+              onClick={(event) => { event.stopPropagation(); onOpenInstance(instance) }}
+              className={`h-3 w-3 shrink-0 rounded-full transition-transform duration-150 hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 ${
                 instance.isPaid ? 'opacity-40' : ''
               }`}
-              style={{
-                backgroundColor: getThemeDotColor(instance.color, isDark),
-              }}
+              style={{ backgroundColor: getThemeDotColor(instance.color, isDark) }}
             />
           ))}
           {extraDots > 0 && (
