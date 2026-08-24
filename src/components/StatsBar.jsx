@@ -1,5 +1,6 @@
 import { CARD_CLASS } from '../constants';
 import { formatMoney } from '../finance';
+import { pluralizeLabel } from '../dateUtils';
 
 function StatCard({ label, value, sub }) {
   return (
@@ -28,7 +29,7 @@ export default function StatsBar({ stats, periodLabelText, taxPercent }) {
       <StatCard
         label="По договорам"
         value={formatMoney(stats.grossTotal)}
-        sub={`${stats.projectCount} проект${stats.projectCount === 1 ? '' : 'ов'} · ${stats.lessonCount} урок${stats.lessonCount === 1 ? '' : 'ов'} · ${periodLabelText}`}
+        sub={`${pluralizeLabel(stats.projectCount, 'проект', 'проекта', 'проектов')} · ${pluralizeLabel(stats.lessonCount, 'урок', 'урока', 'уроков')} · ${periodLabelText}`}
       />
       <StatCard
         label="Получено на руки"

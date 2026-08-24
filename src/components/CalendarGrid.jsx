@@ -27,7 +27,7 @@ function ProjectChip({ instance, isDark, onClick }) {
       }}
     >
       <span
-        className={`min-w-0 truncate text-[11px] font-bold leading-tight ${instance.isPaid ? 'line-through' : ''}`}
+        className={`min-w-0 flex-1 truncate text-[11px] font-bold leading-4 ${instance.isPaid ? 'line-through' : ''}`}
       >
         {instance.title}
       </span>
