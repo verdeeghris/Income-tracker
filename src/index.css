@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Резервируем место под вертикальный скроллбар всегда.
-   Благодаря этому страница не «прыгает» влево-вправо, когда скроллбар
-   появляется (режим «Месяц») или исчезает (блокировка скролла модалкой). */
-html {
-  scrollbar-gutter: stable;
-}
 
 :root {
   /* Чуть приглушённый тёплый фон — белые карточки не «резали» глаза */
@@ -84,7 +78,7 @@ option {
   align-items: flex-end;
   justify-content: center;
   overflow-y: auto;
-  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
   background: rgb(28 25 23 / 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -93,7 +87,7 @@ option {
 .modal-sheet {
   width: 100%;
   max-width: 28rem;
-  max-height: calc(100dvh - 2rem);
+  max-height: calc(100dvh - 1.5rem);
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 1px solid rgb(231 229 228 / 0.8);
@@ -105,7 +99,15 @@ option {
 }
 
 .dark .modal-sheet { border-color: rgb(255 255 255 / 0.1); }
-input, select, textarea { font-size: 16px; }
+input, select, textarea { font-size: 16px; line-height: 1.4; }
+
+@supports (height: 100svh) {
+  .modal-sheet { max-height: calc(100svh - 1.5rem); }
+}
+
+@media (max-width: 639px) {
+  .modal-sheet { padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+}
 
 @media (min-width: 640px) {
   .modal-overlay { align-items: center; }
@@ -135,14 +137,4 @@ input, select, textarea { font-size: 16px; }
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-body {
-  background-color: #F3F4F6; /* Серый контрастный фон для светлой темы */
-  color: #111827;
-}
-
-html.dark body {
-  background-color: #09090B; /* Тёмный фон */
-  color: #F9FAFB;
 }

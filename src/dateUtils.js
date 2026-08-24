@@ -119,8 +119,8 @@ export function periodLabel(mode, key) {
 }
 
 // «1 проект» / «4 проекта» / «12 проектов»
-export function pluralizeLabel(count) {
-  return `${count} ${pluralize(count, 'проект', 'проекта', 'проектов')}`;
+export function pluralizeLabel(count, one = 'проект', few = 'проекта', many = 'проектов') {
+  return `${count} ${pluralize(count, one, few, many)}`;
 }
 
 // Матрица месяца: массив недель по 7 ключей, всегда 6 строк —

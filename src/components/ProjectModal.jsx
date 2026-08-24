@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CalendarDays,
   Check,
@@ -18,16 +18,14 @@ import {
 } from '../constants';
 import {
   WEEKDAYS_SHORT,
-  addDays,
   addMonths,
-  daysInMonth,
-  formatDateKey,
   formatLongDate,
   formatMonthTitle,
   getMonthMatrix,
   parseDateKey,
 } from '../dateUtils';
 import { formatMoney, netOf } from '../finance';
+import { presetMonthEnd, presetNextWeeks } from '../copyDates';
 
 function Field({ label, children }) {
   return (
@@ -40,31 +38,12 @@ function Field({ label, children }) {
   );
 }
 
-export function presetNextWeeks(anchorKey) {
-  return [1, 2, 3, 4].map((week) => addDays(anchorKey, week * 7));
-}
-
-export function presetMonthEnd(anchorKey) {
-  const date = parseDateKey(anchorKey);
-  const lastDay = daysInMonth(date.getFullYear(), date.getMonth());
-  const result = [];
-  for (let day = date.getDate() + 1; day <= lastDay; day += 1) {
-    result.push(
-      formatDateKey(new Date(date.getFullYear(), date.getMonth(), day))
-    );
-  }
-  return result;
-}
-
-export function CopyPicker({ anchorKey, selectedSet, onToggle }) {
+export function CopyPicker({ anchorKey, selectedSet, onToggle, itemLabel = 'проектами' }) {
   const [viewKey, setViewKey] = useState(anchorKey);
   const view = parseDateKey(viewKey);
   const viewYear = view.getFullYear();
   const viewMonth = view.getMonth();
-  const weeks = useMemo(
-    () => getMonthMatrix(viewYear, viewMonth),
-    [viewYear, viewMonth]
-  );
+  const weeks = getMonthMatrix(viewYear, viewMonth);
 
   const navButtonClass =
     'rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/10 dark:hover:text-white';
@@ -129,7 +108,7 @@ export function CopyPicker({ anchorKey, selectedSet, onToggle }) {
       </div>
 
       <p className="mt-2.5 text-center text-[11px] font-medium text-stone-400 dark:text-zinc-500">
-        Копии создаются независимыми проектами
+        Копии создаются независимыми {itemLabel}
       </p>
     </div>
   );
@@ -145,6 +124,7 @@ export default function ProjectModal({
   onDelete,
 }) {
   const isEdit = Boolean(instance);
+  const projectTemplates = templates.filter((item) => item.type === 'project');
 
   const [title, setTitle] = useState(instance?.title || '');
   const [amount, setAmount] = useState(
@@ -152,7 +132,7 @@ export default function ProjectModal({
   );
   const [color, setColor] = useState(instance?.color || PALETTE[0].id);
   const [isPaid, setIsPaid] = useState(Boolean(instance?.isPaid));
-  const [isGph, setIsGph] = useState(Boolean(instance?.is_gph));
+  const [isGph, setIsGph] = useState(Boolean(instance?.isGph ?? instance?.is_gph));
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [copyDates, setCopyDates] = useState(() => new Set());
@@ -243,10 +223,10 @@ export default function ProjectModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isEdit && templates.length > 0 && (
+          {!isEdit && projectTemplates.length > 0 && (
             <Field label="Использовать прошлый проект">
               <div className="flex gap-1.5 overflow-x-auto p-1 scrollbar-none">
-                {templates.map((template) => {
+                {projectTemplates.map((template) => {
                   const templateColor = paletteOf(template.color);
                   return (
                     <button
@@ -347,7 +327,7 @@ export default function ProjectModal({
                     type="button"
                     onClick={() => setCopyDates(new Set())}
                     aria-label="Очистить выбор"
-                    className="transition-opacity hover:opacity-60"
+                    className="inline-flex h-4 w-4 items-center justify-center rounded-full transition-colors hover:bg-emerald-200/70 hover:text-emerald-900 dark:hover:bg-emerald-400/20 dark:hover:text-emerald-100"
                   >
                     <X className="h-3 w-3" />
                   </button>

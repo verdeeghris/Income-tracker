@@ -27,11 +27,11 @@ function ProjectChip({ instance, isDark, onClick }) {
       }}
     >
       <span
-        className={`min-w-0 truncate text-[11px] font-bold leading-tight ${instance.isPaid ? 'line-through' : ''}`}
+        className={`min-w-0 flex-1 truncate text-[11px] font-bold leading-4 ${instance.isPaid ? 'line-through' : ''}`}
       >
         {instance.title}
       </span>
-      <span className='shrink-0 text-[10px] font-extrabold tabular-nums opacity-90'>
+      <span className='shrink-0 text-[10px] font-extrabold tabular-nums leading-4 opacity-90'>
         {formatMoney(instance.amount)}
       </span>
     </button>
@@ -46,7 +46,7 @@ function DayCell({
   isExpanded,
   onToggleExpand,
   onSelectDay,
-  onOpenProject,
+  onOpenInstance,
   isDark,
   dimmed,
 }) {
@@ -63,11 +63,13 @@ function DayCell({
   const extraDots = instances.length - visibleDots.length
   const isToday = dateKey === todayKey()
   const isSelected = dateKey === selectedKey
+  const projectCount = instances.filter((item) => item.type === 'project').length
+  const lessonCount = instances.filter((item) => item.type === 'lesson').length
   const hasUnpaid = instances.some((item) => !item.isPaid)
 
   const cellClasses = [
-    'group flex cursor-pointer flex-col rounded-xl border p-1.5 text-left transition-colors duration-150 sm:p-2',
-    'hover:border-stone-400 hover:bg-stone-100 dark:hover:border-white/25 dark:hover:bg-white/[0.06]',
+    'group flex flex-col rounded-xl border p-1.5 text-left transition-colors duration-150 sm:p-2',
+    dimmed ? 'cursor-default' : 'cursor-pointer hover:border-stone-400 hover:bg-stone-100 dark:hover:border-white/25 dark:hover:bg-white/[0.06]',
     isSelected
       ? 'border-stone-800 ring-1 ring-stone-800 dark:border-white dark:ring-white'
       : 'border-stone-200/80 dark:border-white/[0.07]',
@@ -85,11 +87,11 @@ function DayCell({
     <div
       role='button'
       tabIndex={0}
-      onClick={() => onSelectDay(dateKey)}
+      onClick={() => { if (!dimmed) onSelectDay(dateKey) }}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          onSelectDay(dateKey)
+          if (!dimmed) onSelectDay(dateKey)
         }
       }}
       className={cellClasses}
@@ -113,28 +115,35 @@ function DayCell({
       </div>
 
       {mode === 'day' ? (
-        <div className='mt-2.5 flex flex-col gap-1.5'>
+        <>
+          <div className='mt-1 flex flex-wrap gap-x-2 text-[10px] font-semibold text-stone-500 dark:text-zinc-400'>
+            <span>{projectCount} {projectCount === 1 ? 'проект' : projectCount >= 2 && projectCount <= 4 ? 'проекта' : 'проектов'}</span>
+            <span>{lessonCount} {lessonCount === 1 ? 'урок' : lessonCount >= 2 && lessonCount <= 4 ? 'урока' : 'уроков'}</span>
+          </div>
+          <div className='mt-2.5 flex flex-col gap-1.5'>
           {instances.map((instance) => (
             <ProjectChip
               key={instance.instanceKey}
               instance={instance}
               isDark={isDark}
-              onClick={onOpenProject}
+              onClick={onOpenInstance}
             />
           ))}
-        </div>
+          </div>
+        </>
       ) : (
         <div className='mt-1.5 flex flex-wrap items-center gap-1 sm:hidden'>
           {visibleDots.map((instance) => (
-            <span
+            <button
               key={instance.instanceKey}
+              type='button'
               title={`${instance.title} · ${formatMoney(instance.amount)}`}
-              className={`h-2.5 w-2.5 shrink-0 aspect-square rounded-full transition-colors duration-200 ${
+              aria-label={`Открыть ${instance.title}`}
+              onClick={(event) => { event.stopPropagation(); onOpenInstance(instance) }}
+              className={`h-3 w-3 shrink-0 rounded-full transition-transform duration-150 hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 ${
                 instance.isPaid ? 'opacity-40' : ''
               }`}
-              style={{
-                backgroundColor: getThemeDotColor(instance.color, isDark),
-              }}
+              style={{ backgroundColor: getThemeDotColor(instance.color, isDark) }}
             />
           ))}
           {extraDots > 0 && (
@@ -153,7 +162,7 @@ function DayCell({
             key={instance.instanceKey}
             instance={instance}
             isDark={isDark}
-            onClick={onOpenProject}
+            onClick={onOpenInstance}
           />
         ))}
 
@@ -184,7 +193,7 @@ function DayCell({
 
       {mode === 'day' && instances.length === 0 && (
         <div className='mt-3 flex flex-1 items-center justify-center rounded-xl border border-dashed border-stone-300 px-4 py-8 text-center text-xs font-medium text-stone-400 dark:border-white/10 dark:text-zinc-500'>
-          Нет проектов — нажмите, чтобы добавить
+          Нет записей — нажмите, чтобы добавить
         </div>
       )}
     </div>
@@ -198,7 +207,7 @@ export default function CalendarGrid({
   byDate,
   isDark,
   onSelectDay,
-  onOpenProject,
+  onOpenInstance,
 }) {
   const [expandedDays, setExpandedDays] = useState(() => new Set())
 
@@ -245,7 +254,7 @@ export default function CalendarGrid({
           isExpanded={false}
           onToggleExpand={toggleExpand}
           onSelectDay={onSelectDay}
-          onOpenProject={onOpenProject}
+          onOpenInstance={onOpenInstance}
           isDark={isDark}
           dimmed={false}
         />
@@ -263,7 +272,7 @@ export default function CalendarGrid({
               isExpanded={expandedDays.has(dateKey)}
               onToggleExpand={toggleExpand}
               onSelectDay={onSelectDay}
-              onOpenProject={onOpenProject}
+              onOpenInstance={onOpenInstance}
               isDark={isDark}
               dimmed={false}
             />
@@ -285,7 +294,7 @@ export default function CalendarGrid({
                   isExpanded={expandedDays.has(dateKey)}
                   onToggleExpand={toggleExpand}
                   onSelectDay={onSelectDay}
-                  onOpenProject={onOpenProject}
+                  onOpenInstance={onOpenInstance}
                   isDark={isDark}
                   dimmed={parseDateKey(dateKey).getMonth() !== selectedMonth}
                 />
