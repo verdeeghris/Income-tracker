@@ -28,17 +28,17 @@ export default function StatsBar({ stats, periodLabelText, taxPercent }) {
       <StatCard
         label="По договорам"
         value={formatMoney(stats.grossTotal)}
-        sub={`${stats.projectCount} проект${stats.projectCount === 1 ? '' : 'ов'} + ${stats.lessonCount} урок${stats.lessonCount === 1 ? '' : 'ов'} · ${periodLabelText}`}
+        sub={`${stats.projectCount} проект${stats.projectCount === 1 ? '' : 'ов'} · ${stats.lessonCount} урок${stats.lessonCount === 1 ? '' : 'ов'} · ${periodLabelText}`}
       />
       <StatCard
         label="Получено на руки"
         value={formatMoney(stats.paidNet)}
-        sub={paidDetails ? `${paidDetails.replace(' · ', ' + ')} · ${formatMoney(stats.paidGross)} по договорам` : 'Нет оплаченных записей'}
+        sub={paidDetails ? `${paidDetails} · ${formatMoney(stats.paidGross)} по договорам` : 'Нет оплаченных записей'}
       />
       <StatCard
         label="Ожидается к выплате"
         value={formatMoney(stats.pendingNet)}
-        sub={pendingDetails ? `${pendingDetails.replace(' · ', ' + ')} · ${formatMoney(stats.pendingGross)} по договорам` : 'Нет записей к выплате'}
+        sub={pendingDetails ? `${pendingDetails} · ${formatMoney(stats.pendingGross)} по договорам` : 'Нет записей к выплате'}
       />
     </section>
   );
