@@ -47,7 +47,7 @@ export default function UnpaidPanel({ items, onOpen, isDark }) {
                   <button
                     type="button"
                     onClick={() => onOpen(item)}
-                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-stone-50 dark:hover:bg-white/[0.04] sm:px-5"
+                    className="grid w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-stone-50 dark:hover:bg-white/[0.04] sm:px-5"
                   >
                     <span
                       className="h-2.5 w-2.5 shrink-0 rounded-full transition-colors duration-200"

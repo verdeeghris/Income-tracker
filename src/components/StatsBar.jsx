@@ -14,8 +14,17 @@ function StatCard({ label, value, sub }) {
 // Три согласованных блока статистики за видимый период календаря:
 // сколько написано в договорах, сколько получено на руки и что ещё ожидается.
 export default function StatsBar({ stats, periodLabelText, taxPercent }) {
+  const paidDetails = [
+    stats.projectPaidGross > 0 && `Проекты после налога ${taxPercent}%`,
+    stats.lessonPaidGross > 0 && 'Уроки без налога',
+  ].filter(Boolean).join(' · ')
+  const pendingDetails = [
+    stats.projectPendingGross > 0 && `Проекты после налога ${taxPercent}%`,
+    stats.lessonPendingGross > 0 && 'Уроки без налога',
+  ].filter(Boolean).join(' · ')
+
   return (
-    <section aria-label="Статистика за период" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <section aria-label="Статистика за период" className="grid grid-cols-1 items-start gap-3 sm:grid-cols-3">
       <StatCard
         label="По договорам"
         value={formatMoney(stats.grossTotal)}
@@ -24,12 +33,12 @@ export default function StatsBar({ stats, periodLabelText, taxPercent }) {
       <StatCard
         label="Получено на руки"
         value={formatMoney(stats.paidNet)}
-        sub={`${stats.projectPaidGross > 0 ? `проекты после налога ${taxPercent}%` : ''}${stats.projectPaidGross > 0 && stats.lessonPaidGross > 0 ? ' · ' : ''}${stats.lessonPaidGross > 0 ? 'уроки без налога' : ''} · в договорах ${formatMoney(stats.paidGross)}`}
+        sub={paidDetails ? `${paidDetails} · ${formatMoney(stats.paidGross)} по договорам` : 'Нет оплаченных записей'}
       />
       <StatCard
         label="Ожидается к выплате"
         value={formatMoney(stats.pendingNet)}
-        sub={`${stats.projectPendingGross > 0 ? `проекты после налога ${taxPercent}%` : ''}${stats.projectPendingGross > 0 && stats.lessonPendingGross > 0 ? ' · ' : ''}${stats.lessonPendingGross > 0 ? 'уроки без налога' : ''} · в договорах ${formatMoney(stats.pendingGross)}`}
+        sub={pendingDetails ? `${pendingDetails} · ${formatMoney(stats.pendingGross)} по договорам` : 'Нет записей к выплате'}
       />
     </section>
   );
