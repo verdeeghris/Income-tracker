@@ -1,19 +1,42 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, Clock } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { CARD_CLASS, getThemeDotColor } from '../constants';
 import { formatLongDate } from '../dateUtils';
 import { formatMoney } from '../finance';
 
+const pad = (value) => String(value).padStart(2, '0');
+const toKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+const monthLabel = (date) => date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+
 export default function UnpaidPanel({ items, onOpen, isDark }) {
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [range, setRange] = useState({ from: '', to: '' });
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date());
+
+  const calendarDays = useMemo(() => {
+    const first = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
+    const start = (first.getDay() + 6) % 7;
+    const count = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
+    return Array.from({ length: 42 }, (_, index) => {
+      const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), index - start + 1);
+      return { date, key: toKey(date), current: date.getMonth() === calendarMonth.getMonth() };
+    }).slice(0, Math.max(35, Math.ceil((start + count) / 7) * 7));
+  }, [calendarMonth]);
 
   const filteredItems = useMemo(() => items.filter((item) => {
-    if (filter === 'projects') return item.type === 'project';
-    if (filter === 'lessons') return item.type === 'lesson';
-    if (filter === 'gph') return item.type === 'project' && item.isGph;
+    if (filter === 'projects' && item.type !== 'project') return false;
+    if (filter === 'lessons' && item.type !== 'lesson') return false;
+    if (filter === 'gph' && !(item.type === 'project' && item.isGph)) return false;
+    if (filter === 'period' && (!range.from || !range.to || item.date < range.from || item.date > range.to)) return false;
     return true;
-  }), [items, filter]);
+  }), [items, filter, range]);
+
+  const selectDate = (key) => {
+    if (!range.from || (range.from && range.to)) setRange({ from: key, to: '' });
+    else setRange({ from: key < range.from ? key : range.from, to: key < range.from ? range.from : key });
+    setFilter('period');
+  };
 
   if (!items.length) return null;
 
@@ -48,10 +71,20 @@ export default function UnpaidPanel({ items, onOpen, isDark }) {
       <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
         <div className="overflow-hidden">
           <div className="flex gap-1.5 overflow-x-auto border-t border-stone-100 px-4 py-2.5 dark:border-white/5 sm:px-5">
-            {[['all', 'Все'], ['projects', 'Проекты'], ['lessons', 'Уроки'], ['gph', 'Проекты в ГПХ']].map(([value, label]) => (
-              <button key={value} type="button" onClick={() => setFilter(value)} aria-pressed={filter === value} className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold transition-colors ${filter === value ? 'bg-stone-900 text-white dark:bg-white dark:text-stone-900' : 'bg-stone-100 text-stone-500 hover:text-stone-900 dark:bg-white/[0.06] dark:text-zinc-400 dark:hover:text-white'}`}>{label}</button>
+            {[['all', 'Все'], ['projects', 'Проекты'], ['lessons', 'Уроки'], ['gph', 'Проекты в ГПХ'], ['period', range.from && range.to ? `${range.from.slice(8)}.${range.from.slice(5, 7)} — ${range.to.slice(8)}.${range.to.slice(5, 7)}` : 'Период']].map(([value, label]) => (
+              <button key={value} type="button" onClick={() => setFilter(value)} aria-pressed={filter === value} className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold transition-colors ${filter === value ? 'bg-emerald-600 text-white dark:bg-emerald-500 dark:text-white' : 'bg-stone-100 text-stone-500 hover:text-stone-900 dark:bg-white/[0.06] dark:text-zinc-400 dark:hover:text-white'}`}>{label}</button>
             ))}
           </div>
+          {filter === 'period' && <div className="mx-4 mb-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 dark:border-emerald-400/20 dark:bg-emerald-400/[0.06] sm:mx-5">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <button type="button" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1))} className="inline-flex h-7 w-7 items-center justify-center rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-400/10" aria-label="Предыдущий месяц"><ChevronLeft className="h-4 w-4" /></button>
+              <span className="text-xs font-extrabold capitalize">{monthLabel(calendarMonth)}</span>
+              <button type="button" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1))} className="inline-flex h-7 w-7 items-center justify-center rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-400/10" aria-label="Следующий месяц"><ChevronRight className="h-4 w-4" /></button>
+            </div>
+            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-emerald-700/70 dark:text-emerald-300/70">{['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day) => <span key={day}>{day}</span>)}</div>
+            <div className="mt-1 grid grid-cols-7 gap-1">{calendarDays.map(({ date, key, current }) => { const selected = key === range.from || key === range.to; const between = range.from && range.to && key > range.from && key < range.to; return <button key={key} type="button" onClick={() => selectDate(key)} className={`h-7 rounded-md text-[11px] font-semibold transition-colors ${!current ? 'text-emerald-900/25 dark:text-emerald-100/20' : 'text-emerald-950 dark:text-emerald-100'} ${between ? 'bg-emerald-200 dark:bg-emerald-400/20' : ''} ${selected ? 'bg-emerald-600 font-black text-white dark:bg-emerald-500' : 'hover:bg-emerald-100 dark:hover:bg-emerald-400/10'}`}>{date.getDate()}</button> })}</div>
+            {(range.from || range.to) && <button type="button" onClick={() => { setRange({ from: '', to: '' }); setFilter('all'); }} className="mt-2 text-[11px] font-bold text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-300">Сбросить период</button>}
+          </div>}
           {filteredItems.length === 0 ? <p className="px-4 py-5 text-center text-xs text-stone-500 dark:text-zinc-400 sm:px-5">В этой категории нет неоплаченных записей.</p> : <ul>
             {filteredItems.map((item) => {
               const dotBg = getThemeDotColor(item.color, isDark);
