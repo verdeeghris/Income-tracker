@@ -1,5 +1,4 @@
 import { CARD_CLASS } from '../constants';
-import { pluralizeLabel } from '../dateUtils';
 import { formatMoney } from '../finance';
 
 function StatCard({ label, value, sub }) {
@@ -20,17 +19,17 @@ export default function StatsBar({ stats, periodLabelText, taxPercent }) {
       <StatCard
         label="По договорам"
         value={formatMoney(stats.grossTotal)}
-        sub={`${pluralizeLabel(stats.count)} · ${periodLabelText}`}
+        sub={`${stats.projectCount} проект${stats.projectCount === 1 ? '' : 'ов'} · ${stats.lessonCount} урок${stats.lessonCount === 1 ? '' : 'ов'} · ${periodLabelText}`}
       />
       <StatCard
         label="Получено на руки"
         value={formatMoney(stats.paidNet)}
-        sub={`после налога ${taxPercent}% · в договорах ${formatMoney(stats.paidGross)}`}
+        sub={`${stats.projectPaidGross > 0 ? `проекты после налога ${taxPercent}%` : ''}${stats.projectPaidGross > 0 && stats.lessonPaidGross > 0 ? ' · ' : ''}${stats.lessonPaidGross > 0 ? 'уроки без налога' : ''} · в договорах ${formatMoney(stats.paidGross)}`}
       />
       <StatCard
         label="Ожидается к выплате"
         value={formatMoney(stats.pendingNet)}
-        sub={`после налога ${taxPercent}% · в договорах ${formatMoney(stats.pendingGross)}`}
+        sub={`${stats.projectPendingGross > 0 ? `проекты после налога ${taxPercent}%` : ''}${stats.projectPendingGross > 0 && stats.lessonPendingGross > 0 ? ' · ' : ''}${stats.lessonPendingGross > 0 ? 'уроки без налога' : ''} · в договорах ${formatMoney(stats.pendingGross)}`}
       />
     </section>
   );
