@@ -66,8 +66,8 @@ function DayCell({
   const hasUnpaid = instances.some((item) => !item.isPaid)
 
   const cellClasses = [
-    'group flex cursor-pointer flex-col rounded-xl border p-1.5 text-left transition-colors duration-150 sm:p-2',
-    'hover:border-stone-400 hover:bg-stone-100 dark:hover:border-white/25 dark:hover:bg-white/[0.06]',
+    'group flex flex-col rounded-xl border p-1.5 text-left transition-colors duration-150 sm:p-2',
+    dimmed ? 'cursor-default' : 'cursor-pointer hover:border-stone-400 hover:bg-stone-100 dark:hover:border-white/25 dark:hover:bg-white/[0.06]',
     isSelected
       ? 'border-stone-800 ring-1 ring-stone-800 dark:border-white dark:ring-white'
       : 'border-stone-200/80 dark:border-white/[0.07]',
@@ -85,11 +85,11 @@ function DayCell({
     <div
       role='button'
       tabIndex={0}
-      onClick={() => onSelectDay(dateKey)}
+      onClick={() => { if (!dimmed) onSelectDay(dateKey) }}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          onSelectDay(dateKey)
+          if (!dimmed) onSelectDay(dateKey)
         }
       }}
       className={cellClasses}
