@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Check, X } from 'lucide-react';
 import { BTN_PRIMARY_CLASS, paletteOf } from '../constants';
 import { formatLongDate, pluralizeLabel } from '../dateUtils';
@@ -8,16 +8,29 @@ import { formatMoney } from '../finance';
 // в котором уже есть проекты. Отсюда можно отредактировать любой проект
 // или добавить новый.
 export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, onAddProject, onAddLesson }) {
+  const dialogRef = useRef(null)
+  const restoreFocusRef = useRef(null)
+
   useEffect(() => {
+    restoreFocusRef.current = document.activeElement
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKeyDown = (event) => {
       if (event.key === 'Escape') onClose();
+      if (event.key === 'Tab' && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll('button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+        if (!focusable.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      restoreFocusRef.current?.focus?.();
     };
   }, [onClose]);
 
@@ -29,12 +42,16 @@ export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, o
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="day-details-title"
         onClick={(event) => event.stopPropagation()}
         className="modal-sheet max-w-sm"
       >
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-extrabold tracking-tight">{formatLongDate(dateKey)}</h2>
+            <h2 id="day-details-title" className="text-base font-extrabold tracking-tight">{formatLongDate(dateKey)}</h2>
             <p className="mt-0.5 text-xs font-medium text-stone-500 dark:text-zinc-400">
               {pluralizeLabel(instances.filter((item) => item.type === 'project').length, 'проект', 'проекта', 'проектов')} · {pluralizeLabel(instances.filter((item) => item.type === 'lesson').length, 'урок', 'урока', 'уроков')} · всего {formatMoney(total)}
             </p>
