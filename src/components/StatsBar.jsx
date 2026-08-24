@@ -3,10 +3,10 @@ import { formatMoney } from '../finance';
 
 function StatCard({ label, value, sub }) {
   return (
-    <div className={`${CARD_CLASS} p-4 sm:p-5`}>
+    <div className={`${CARD_CLASS} flex h-full min-h-[128px] flex-col p-4 sm:p-5`}>
       <div className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-zinc-500">{label}</div>
       <div className="mt-1.5 text-xl font-extrabold tabular-nums tracking-tight sm:text-2xl">{value}</div>
-      {sub && <div className="mt-1 text-[11px] leading-snug text-stone-500 dark:text-zinc-400">{sub}</div>}
+      {sub && <div className="mt-auto pt-2 text-[11px] leading-snug text-stone-500 dark:text-zinc-400">{sub}</div>}
     </div>
   );
 }
@@ -28,17 +28,17 @@ export default function StatsBar({ stats, periodLabelText, taxPercent }) {
       <StatCard
         label="По договорам"
         value={formatMoney(stats.grossTotal)}
-        sub={`${stats.projectCount} проект${stats.projectCount === 1 ? '' : 'ов'} · ${stats.lessonCount} урок${stats.lessonCount === 1 ? '' : 'ов'} · ${periodLabelText}`}
+        sub={`${stats.projectCount} проект${stats.projectCount === 1 ? '' : 'ов'} + ${stats.lessonCount} урок${stats.lessonCount === 1 ? '' : 'ов'} · ${periodLabelText}`}
       />
       <StatCard
         label="Получено на руки"
         value={formatMoney(stats.paidNet)}
-        sub={paidDetails ? `${paidDetails} · ${formatMoney(stats.paidGross)} по договорам` : 'Нет оплаченных записей'}
+        sub={paidDetails ? `${paidDetails.replace(' · ', ' + ')} · ${formatMoney(stats.paidGross)} по договорам` : 'Нет оплаченных записей'}
       />
       <StatCard
         label="Ожидается к выплате"
         value={formatMoney(stats.pendingNet)}
-        sub={pendingDetails ? `${pendingDetails} · ${formatMoney(stats.pendingGross)} по договорам` : 'Нет записей к выплате'}
+        sub={pendingDetails ? `${pendingDetails.replace(' · ', ' + ')} · ${formatMoney(stats.pendingGross)} по договорам` : 'Нет записей к выплате'}
       />
     </section>
   );

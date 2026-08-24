@@ -38,7 +38,7 @@ function Field({ label, children }) {
   );
 }
 
-export function CopyPicker({ anchorKey, selectedSet, onToggle }) {
+export function CopyPicker({ anchorKey, selectedSet, onToggle, itemLabel = 'проектами' }) {
   const [viewKey, setViewKey] = useState(anchorKey);
   const view = parseDateKey(viewKey);
   const viewYear = view.getFullYear();
@@ -108,7 +108,7 @@ export function CopyPicker({ anchorKey, selectedSet, onToggle }) {
       </div>
 
       <p className="mt-2.5 text-center text-[11px] font-medium text-stone-400 dark:text-zinc-500">
-        Копии создаются независимыми проектами
+        Копии создаются независимыми {itemLabel}
       </p>
     </div>
   );
@@ -285,7 +285,7 @@ export default function ProjectModal({
             </div>
             {Number(amount) > 0 && (
               <p className="mt-1.5 text-[11px] font-medium text-stone-500 dark:text-zinc-400">
-                На руки после налога {TAX_PERCENT}% — примерно{' '}
+                На р��ки после налога {TAX_PERCENT}% — примерно{' '}
                 {formatMoney(netOf(Number(amount)))}
               </p>
             )}
