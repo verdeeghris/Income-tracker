@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Clock } from 'lucide-react';
-import { CARD_CLASS, paletteOf, getThemeDotColor } from '../constants';
+import { CARD_CLASS, getThemeDotColor } from '../constants';
 import { formatLongDate } from '../dateUtils';
 import { formatMoney } from '../finance';
 

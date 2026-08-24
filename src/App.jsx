@@ -26,7 +26,11 @@ export default function App() {
 
   useEffect(() => { supabase.auth.getSession().then(({ data: { session: next } }) => { setSession(next); setLoading(false) }); const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, next) => setSession(next)); return () => subscription.unsubscribe() }, [])
   const fetchData = useCallback(async () => { if (!session?.user) return; const [p, l] = await Promise.all([supabase.from('projects').select('*').eq('user_id', session.user.id), supabase.from('lessons').select('*').eq('user_id', session.user.id)]); if (p.error || l.error) { setError('Не удалось загрузить данные. Попробуйте обновить страницу.'); return } setProjects((p.data || []).map((row) => normalize(row, 'project'))); setLessons((l.data || []).map((row) => normalize(row, 'lesson'))) }, [session])
+  // Data loading is an external synchronization with Supabase.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (session) fetchData() }, [session, fetchData])
+  // Restore the persisted calendar mode after the initial data load.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (!projects.length && !lessons.length) setMode('day'); else { const saved = sessionStorage.getItem('gph_view_mode'); if (saved) setMode(saved) } }, [projects.length, lessons.length])
   const changeMode = (next) => { setMode(next); if (projects.length || lessons.length) sessionStorage.setItem('gph_view_mode', next) }
   const period = useMemo(() => getPeriod(mode, selectedKey), [mode, selectedKey]); const instances = useMemo(() => [...projects, ...lessons].filter((item) => item.date >= period.from && item.date <= period.to), [projects, lessons, period]); const byDate = useMemo(() => groupByDate(instances), [instances]); const stats = useMemo(() => computeStats(instances), [instances]); const selectedDate = parseDateKey(selectedKey); const weeks = useMemo(() => getMonthMatrix(selectedDate.getFullYear(), selectedDate.getMonth()), [selectedDate]);
