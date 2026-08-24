@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CalendarDays,
   Check,
@@ -137,17 +137,29 @@ export default function ProjectModal({
 
   const [copyDates, setCopyDates] = useState(() => new Set());
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const restoreFocusRef = useRef(null);
+  const dialogRef = useRef(null);
 
   useEffect(() => {
+    restoreFocusRef.current = document.activeElement;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKeyDown = (event) => {
       if (event.key === 'Escape') onClose();
+      if (event.key === 'Tab' && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+        if (!focusable.length) return;
+        const first = focusable[0]; const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      restoreFocusRef.current?.focus?.();
     };
   }, [onClose]);
 
@@ -174,15 +186,16 @@ export default function ProjectModal({
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!title.trim() || !amount) return;
-    onSave({
+    if (isSaving || !title.trim() || !amount) return;
+    setIsSaving(true);
+    Promise.resolve(onSave({
       title: title.trim(),
       amount: Number(amount),
       color,
       isPaid,
       isGph,
       copyDates: Array.from(copyDates).sort(),
-    });
+    })).finally(() => setIsSaving(false));
   };
 
   const applyTemplate = (template) => {
@@ -200,6 +213,9 @@ export default function ProjectModal({
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
         onClick={(event) => event.stopPropagation()}
         className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl border border-stone-200 bg-[var(--card)] p-5 shadow-2xl animate-pop-in dark:border-white/10 sm:p-6"
       >
@@ -321,13 +337,13 @@ export default function ProjectModal({
                 Вручную
               </button>
               {copyDates.size > 0 && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300">
+                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300">
                   {copyDates.size} дн.
                   <button
                     type="button"
                     onClick={() => setCopyDates(new Set())}
                     aria-label="Очистить выбор"
-                    className="inline-flex h-4 w-4 items-center justify-center rounded-full transition-colors hover:bg-emerald-200/70 hover:text-emerald-900 dark:hover:bg-emerald-400/20 dark:hover:text-emerald-100"
+                    className="inline-flex h-4 w-4 translate-x-0.5 items-center justify-center rounded-full transition-colors hover:bg-emerald-200/70 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:bg-emerald-400/20 dark:hover:text-emerald-100"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -418,9 +434,9 @@ export default function ProjectModal({
               >
                 Отмена
               </button>
-              <button type="submit" className={BTN_PRIMARY_CLASS}>
-                Сохранить
-              </button>
+<button type="submit" disabled={isSaving} aria-busy={isSaving} className={`${BTN_PRIMARY_CLASS} disabled:cursor-not-allowed disabled:opacity-60`}>
+    {isSaving ? 'Сохраняем…' : 'Сохранить'}
+  </button>
             </div>
           </div>
         </form>
