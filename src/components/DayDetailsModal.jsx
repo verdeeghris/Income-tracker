@@ -36,14 +36,14 @@ export default function DayDetailsModal({ dateKey, instances, onClose, onEdit, o
           <div>
             <h2 className="text-base font-extrabold tracking-tight">{formatLongDate(dateKey)}</h2>
             <p className="mt-0.5 text-xs font-medium text-stone-500 dark:text-zinc-400">
-              {pluralizeLabel(instances.length)} · всего {formatMoney(total)}
+              {pluralizeLabel(instances.filter((item) => item.type === 'project').length, 'проект', 'проекта', 'проектов')} · {pluralizeLabel(instances.filter((item) => item.type === 'lesson').length, 'урок', 'урока', 'уроков')} · всего {formatMoney(total)}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Закрыть"
-            className="rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/5 dark:hover:text-zinc-200"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/5 dark:hover:text-zinc-200"
           >
             <X className="h-4 w-4" />
           </button>

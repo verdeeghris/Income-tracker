@@ -63,6 +63,8 @@ function DayCell({
   const extraDots = instances.length - visibleDots.length
   const isToday = dateKey === todayKey()
   const isSelected = dateKey === selectedKey
+  const projectCount = instances.filter((item) => item.type === 'project').length
+  const lessonCount = instances.filter((item) => item.type === 'lesson').length
   const hasUnpaid = instances.some((item) => !item.isPaid)
 
   const cellClasses = [
@@ -85,11 +87,11 @@ function DayCell({
     <div
       role='button'
       tabIndex={0}
-      onClick={() => { if (!dimmed) onSelectDay(dateKey) }}
+      onClick={() => { if (!dimmed || instances.length > 0) onSelectDay(dateKey) }}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          if (!dimmed) onSelectDay(dateKey)
+          if (!dimmed || instances.length > 0) onSelectDay(dateKey)
         }
       }}
       className={cellClasses}
@@ -113,7 +115,12 @@ function DayCell({
       </div>
 
       {mode === 'day' ? (
-        <div className='mt-2.5 flex flex-col gap-1.5'>
+        <>
+          <div className='mt-1 flex flex-wrap gap-x-2 text-[10px] font-semibold text-stone-500 dark:text-zinc-400'>
+            <span>{projectCount} {projectCount === 1 ? 'проект' : projectCount >= 2 && projectCount <= 4 ? 'проекта' : 'проектов'}</span>
+            <span>{lessonCount} {lessonCount === 1 ? 'урок' : lessonCount >= 2 && lessonCount <= 4 ? 'урока' : 'уроков'}</span>
+          </div>
+          <div className='mt-2.5 flex flex-col gap-1.5'>
           {instances.map((instance) => (
             <ProjectChip
               key={instance.instanceKey}
@@ -122,7 +129,8 @@ function DayCell({
               onClick={onOpenInstance}
             />
           ))}
-        </div>
+          </div>
+        </>
       ) : (
         <div className='mt-1.5 flex flex-wrap items-center gap-1 sm:hidden'>
           {visibleDots.map((instance) => (

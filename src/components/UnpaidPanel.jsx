@@ -51,7 +51,9 @@ export default function UnpaidPanel({ items, onOpen, isDark }) {
                   >
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full transition-colors duration-200" style={{ backgroundColor: dotBg }} aria-hidden="true" />
                     <span className="min-w-0 flex-1 truncate text-sm font-semibold">{item.title}</span>
-                    <span className="hidden shrink-0 text-xs font-medium text-stone-500 dark:text-zinc-400 sm:block">
+                    <span className="hidden shrink-0 rounded-full border border-stone-200 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-stone-500 dark:border-white/10 dark:text-zinc-400 sm:inline-flex">{item.type === 'lesson' ? 'Урок' : 'Проект'}</span>
+                    {item.isGph && <span className="hidden shrink-0 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300 sm:inline-flex">ГПХ</span>}
+                    <span className="shrink-0 text-[10px] font-medium text-stone-500 dark:text-zinc-400 sm:text-xs">
                       {formatLongDate(item.date)}
                     </span>
                     <span className="shrink-0 text-sm font-extrabold tabular-nums">{formatMoney(item.amount)}</span>

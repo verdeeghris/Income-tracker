@@ -285,7 +285,7 @@ export default function ProjectModal({
             </div>
             {Number(amount) > 0 && (
               <p className="mt-1.5 text-[11px] font-medium text-stone-500 dark:text-zinc-400">
-                На р��ки после налога {TAX_PERCENT}% — примерно{' '}
+                На руки после налога {TAX_PERCENT}% — примерно{' '}
                 {formatMoney(netOf(Number(amount)))}
               </p>
             )}
@@ -327,7 +327,7 @@ export default function ProjectModal({
                     type="button"
                     onClick={() => setCopyDates(new Set())}
                     aria-label="Очистить выбор"
-                    className="transition-opacity hover:opacity-60"
+                    className="inline-flex h-4 w-4 items-center justify-center rounded-full transition-colors hover:bg-emerald-200/70 hover:text-emerald-900 dark:hover:bg-emerald-400/20 dark:hover:text-emerald-100"
                   >
                     <X className="h-3 w-3" />
                   </button>
