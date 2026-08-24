@@ -337,13 +337,13 @@ export default function ProjectModal({
                 Вручную
               </button>
               {copyDates.size > 0 && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300">
+                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300">
                   {copyDates.size} дн.
                   <button
                     type="button"
                     onClick={() => setCopyDates(new Set())}
                     aria-label="Очистить выбор"
-                    className="inline-flex h-4 w-4 items-center justify-center rounded-full transition-colors hover:bg-emerald-200/70 hover:text-emerald-900 dark:hover:bg-emerald-400/20 dark:hover:text-emerald-100"
+                    className="inline-flex h-4 w-4 translate-x-0.5 items-center justify-center rounded-full transition-colors hover:bg-emerald-200/70 hover:text-emerald-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:hover:bg-emerald-400/20 dark:hover:text-emerald-100"
                   >
                     <X className="h-3 w-3" />
                   </button>
