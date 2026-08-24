@@ -137,6 +137,7 @@ export default function ProjectModal({
 
   const [copyDates, setCopyDates] = useState(() => new Set());
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -174,15 +175,16 @@ export default function ProjectModal({
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!title.trim() || !amount) return;
-    onSave({
+    if (isSaving || !title.trim() || !amount) return;
+    setIsSaving(true);
+    Promise.resolve(onSave({
       title: title.trim(),
       amount: Number(amount),
       color,
       isPaid,
       isGph,
       copyDates: Array.from(copyDates).sort(),
-    });
+    })).finally(() => setIsSaving(false));
   };
 
   const applyTemplate = (template) => {
@@ -418,9 +420,9 @@ export default function ProjectModal({
               >
                 Отмена
               </button>
-              <button type="submit" className={BTN_PRIMARY_CLASS}>
-                Сохранить
-              </button>
+<button type="submit" disabled={isSaving} aria-busy={isSaving} className={`${BTN_PRIMARY_CLASS} disabled:cursor-not-allowed disabled:opacity-60`}>
+    {isSaving ? 'Сохраняем…' : 'Сохранить'}
+  </button>
             </div>
           </div>
         </form>

@@ -7,14 +7,11 @@ import { formatMoney } from '../finance';
 const pad = (value) => String(value).padStart(2, '0');
 const toKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 const fromKey = (key) => { const [year, month, day] = key.split('-').map(Number); return new Date(year, month - 1, day); };
-const monthLabel = (date) => date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
-
 export default function UnpaidPanel({ items, onOpen, isDark, selectedKey }) {
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState('all');
   const [range, setRange] = useState({ from: '', to: '' });
   const [calendarMonth, setCalendarMonth] = useState(() => selectedKey ? fromKey(selectedKey) : new Date());
-  const [showYearPicker, setShowYearPicker] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(true);
   const activeCalendarMonth = selectedKey && filter !== 'period' ? fromKey(selectedKey) : calendarMonth;
 
@@ -82,14 +79,17 @@ export default function UnpaidPanel({ items, onOpen, isDark, selectedKey }) {
           {filter === 'period' && isCalendarOpen && <div className="mx-4 mb-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 dark:border-emerald-400/20 dark:bg-emerald-400/[0.06] sm:mx-5">
             <div className="mb-2 flex items-center justify-between gap-2">
               <button type="button" onClick={() => setCalendarMonth(new Date(activeCalendarMonth.getFullYear(), activeCalendarMonth.getMonth() - 1, 1))} className="inline-flex h-7 w-7 items-center justify-center rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-400/10" aria-label="Предыдущий месяц"><ChevronLeft className="h-4 w-4" /></button>
-              {showYearPicker ? <select value={activeCalendarMonth.getFullYear()} onChange={(event) => { setCalendarMonth(new Date(Number(event.target.value), activeCalendarMonth.getMonth(), 1)); setShowYearPicker(false); }} aria-label="Выбрать год" className="rounded-md border border-emerald-200 bg-transparent px-1 py-0.5 text-xs font-extrabold dark:border-emerald-400/20">{Array.from({ length: 31 }, (_, index) => activeCalendarMonth.getFullYear() - 15 + index).map((year) => <option key={year} value={year}>{year}</option>)}</select> : <button type="button" onClick={() => setShowYearPicker(true)} className="rounded-md px-1 py-0.5 text-xs font-extrabold capitalize hover:bg-emerald-100 dark:hover:bg-emerald-400/10">{monthLabel(calendarMonth)}</button>}
+              <div className="flex items-center gap-1.5">
+                <select value={activeCalendarMonth.getMonth()} onChange={(event) => setCalendarMonth(new Date(activeCalendarMonth.getFullYear(), Number(event.target.value), 1))} aria-label="Выбрать месяц" className="max-w-[7.5rem] rounded-md border border-emerald-200 bg-transparent px-1 py-0.5 text-xs font-extrabold capitalize dark:border-emerald-400/20"><option value={0}>Январь</option><option value={1}>Февраль</option><option value={2}>Март</option><option value={3}>Апрель</option><option value={4}>Май</option><option value={5}>Июнь</option><option value={6}>Июль</option><option value={7}>Август</option><option value={8}>Сентябрь</option><option value={9}>Октябрь</option><option value={10}>Ноябрь</option><option value={11}>Декабрь</option></select>
+                <select value={activeCalendarMonth.getFullYear()} onChange={(event) => setCalendarMonth(new Date(Number(event.target.value), activeCalendarMonth.getMonth(), 1))} aria-label="Выбрать год" className="max-w-[5.5rem] rounded-md border border-emerald-200 bg-transparent px-1 py-0.5 text-xs font-extrabold dark:border-emerald-400/20">{Array.from({ length: 31 }, (_, index) => activeCalendarMonth.getFullYear() - 15 + index).map((year) => <option key={year} value={year}>{year}</option>)}</select>
+              </div>
               <button type="button" onClick={() => setCalendarMonth(new Date(activeCalendarMonth.getFullYear(), activeCalendarMonth.getMonth() + 1, 1))} className="inline-flex h-7 w-7 items-center justify-center rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-400/10" aria-label="Следующий месяц"><ChevronRight className="h-4 w-4" /></button>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-emerald-700/70 dark:text-emerald-300/70">{['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day) => <span key={day}>{day}</span>)}</div>
             <div className="mt-1 grid grid-cols-7 gap-1">{calendarDays.map(({ date, key, current }) => { const selected = key === range.from || key === range.to; const between = range.from && range.to && key > range.from && key < range.to; return <button key={key} type="button" onClick={() => selectDate(key)} className={`h-7 rounded-md text-[11px] font-semibold transition-colors ${!current ? 'text-emerald-900/25 dark:text-emerald-100/20' : 'text-emerald-950 dark:text-emerald-100'} ${between ? 'bg-emerald-200 dark:bg-emerald-400/20' : ''} ${selected ? 'bg-emerald-600 font-black text-white dark:bg-emerald-500' : 'hover:bg-emerald-100 dark:hover:bg-emerald-400/10'}`}>{date.getDate()}</button> })}</div>
             <div className="mt-2 flex items-center justify-between gap-3">
               {(range.from || range.to) ? <button type="button" onClick={() => { setRange({ from: '', to: '' }); setFilter('all'); }} className="text-[11px] font-bold text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-300">Сбросить период</button> : <span />}
-              <button type="button" onClick={() => { setIsCalendarOpen(false); setShowYearPicker(false); }} className="rounded-md px-1.5 py-1 text-[11px] font-bold text-emerald-700 hover:bg-emerald-100 dark:text-emerald-300 dark:hover:bg-emerald-400/10" aria-label="Закрыть календарь периода">Закрыть</button>
+              <button type="button" onClick={() => { setIsCalendarOpen(false); }} className="rounded-md px-1.5 py-1 text-[11px] font-bold text-emerald-700 hover:bg-emerald-100 dark:text-emerald-300 dark:hover:bg-emerald-400/10" aria-label="Закрыть календарь периода">Закрыть</button>
             </div>
           </div>}
           {filteredItems.length === 0 ? <p className="px-4 py-5 text-center text-xs text-stone-500 dark:text-zinc-400 sm:px-5">В этой категории нет неоплаченных записей.</p> : <ul>
