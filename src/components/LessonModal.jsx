@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CalendarDays, Check, Trash2, X } from 'lucide-react'
 import { BTN_GHOST_CLASS, BTN_PRIMARY_CLASS, INPUT_CLASS, MAX_COPIES, PALETTE, paletteOf } from '../constants'
 import { CopyPicker } from './ProjectModal'
@@ -17,7 +17,8 @@ export default function LessonModal({ dateKey, instance, templates = [], isDark,
   const [picker, setPicker] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; const handler = (event) => event.key === 'Escape' && onClose(); window.addEventListener('keydown', handler); return () => { document.body.style.overflow = previous; window.removeEventListener('keydown', handler) } }, [onClose])
+  const restoreFocusRef = useRef(null)
+  useEffect(() => { restoreFocusRef.current = document.activeElement; const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; const handler = (event) => event.key === 'Escape' && onClose(); window.addEventListener('keydown', handler); return () => { document.body.style.overflow = previous; window.removeEventListener('keydown', handler); restoreFocusRef.current?.focus?.() } }, [onClose])
   const toggle = (key) => setCopyDates((previous) => { const next = new Set(previous); if (next.has(key)) next.delete(key); else if (next.size < MAX_COPIES) next.add(key); return next })
   const apply = (keys) => setCopyDates((previous) => { const next = [...new Set(keys)].filter((key) => key !== dateKey); return previous.size === next.length && next.every((key) => previous.has(key)) ? new Set() : new Set(next) })
   const submit = (event) => { event.preventDefault(); const parsed = Number(amount); if (isSaving || !title.trim() || !Number.isFinite(parsed) || parsed <= 0) return; setIsSaving(true); Promise.resolve(onSave({ title: title.trim(), amount: parsed, color, isPaid, copyDates: [...copyDates].sort() })).finally(() => setIsSaving(false)) }

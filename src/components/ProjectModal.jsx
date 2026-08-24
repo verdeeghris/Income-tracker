@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CalendarDays,
   Check,
@@ -138,8 +138,10 @@ export default function ProjectModal({
   const [copyDates, setCopyDates] = useState(() => new Set());
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const restoreFocusRef = useRef(null);
 
   useEffect(() => {
+    restoreFocusRef.current = document.activeElement;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKeyDown = (event) => {
@@ -149,6 +151,7 @@ export default function ProjectModal({
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      restoreFocusRef.current?.focus?.();
     };
   }, [onClose]);
 
