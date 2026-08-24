@@ -8,7 +8,7 @@ export function usePersistentState(key, initialValue) {
     try {
       const raw = window.localStorage.getItem(key);
       return raw !== null ? JSON.parse(raw) : initialValue;
-    } catch {
+    } catch (error) {
       return initialValue;
     }
   });
@@ -16,7 +16,7 @@ export function usePersistentState(key, initialValue) {
   useEffect(() => {
     try {
       window.localStorage.setItem(key, JSON.stringify(value));
-    } catch {
+    } catch (error) {
       /* игнорируем — данные просто не сохранятся */
     }
   }, [key, value]);

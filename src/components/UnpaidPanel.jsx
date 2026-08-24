@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Clock } from 'lucide-react';
-import { CARD_CLASS, getThemeDotColor } from '../constants';
+import { CARD_CLASS, paletteOf, getThemeDotColor } from '../constants';
 import { formatLongDate } from '../dateUtils';
 import { formatMoney } from '../finance';
 
@@ -39,7 +39,7 @@ export default function UnpaidPanel({ items, onOpen, isDark }) {
 
       <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
         <div className="overflow-hidden">
-          <ul className="border-t border-stone-100 dark:border-white/5">
+          <ul className="divide-y divide-stone-100 border-t border-stone-100 dark:divide-white/5 dark:border-white/5">
             {items.map((item) => {
               const dotBg = getThemeDotColor(item.color, isDark);
               return (
@@ -47,18 +47,16 @@ export default function UnpaidPanel({ items, onOpen, isDark }) {
                   <button
                     type="button"
                     onClick={() => onOpen(item)}
-                    className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 py-2 text-left transition-colors hover:bg-stone-50 dark:hover:bg-white/[0.04] sm:px-5"
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-stone-50 dark:hover:bg-white/[0.04] sm:px-5"
                   >
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full transition-colors duration-200"
+                      style={{ backgroundColor: dotBg }}
+                      aria-hidden="true"
+                    />
+                    <span className="min-w-0 flex-1 truncate text-sm font-semibold">{item.title}</span>
                     <span className="hidden shrink-0 text-xs font-medium text-stone-500 dark:text-zinc-400 sm:block">
                       {formatLongDate(item.date)}
-                    </span>
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span
-                        className="h-2.5 w-2.5 shrink-0 rounded-full transition-colors duration-200"
-                        style={{ backgroundColor: dotBg }}
-                        aria-hidden="true"
-                      />
-                      <span className="min-w-0 truncate text-sm font-semibold">{item.title}</span>
                     </span>
                     <span className="shrink-0 text-sm font-extrabold tabular-nums">{formatMoney(item.amount)}</span>
                   </button>

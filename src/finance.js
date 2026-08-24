@@ -27,28 +27,18 @@ export function computeStats(instances) {
   let pendingGross = 0;
   let taxablePaidGross = 0;
   let taxablePendingGross = 0;
-  let projectCount = 0;
-  let lessonCount = 0;
-  let projectPaidGross = 0;
-  let lessonPaidGross = 0;
-  let projectPendingGross = 0;
-  let lessonPendingGross = 0;
 
   const unpaidList = [];
   instances.forEach((instance) => {
     const amount = Number(instance.amount) || 0;
     grossTotal += amount;
     const taxable = instance.type !== 'lesson';
-    if (instance.type === 'lesson') lessonCount += 1;
-    else projectCount += 1;
     if (instance.isPaid) {
       paidGross += amount;
-      if (taxable) { taxablePaidGross += amount; projectPaidGross += amount; }
-      else lessonPaidGross += amount;
+      if (taxable) taxablePaidGross += amount;
     } else {
       pendingGross += amount;
-      if (taxable) { taxablePendingGross += amount; projectPendingGross += amount; }
-      else lessonPendingGross += amount;
+      if (taxable) taxablePendingGross += amount;
       unpaidList.push(instance);
     }
   });
@@ -63,11 +53,5 @@ export function computeStats(instances) {
     pendingNet: pendingGross - taxOf(taxablePendingGross),
     pendingTax: taxOf(taxablePendingGross),
     unpaidList,
-    projectCount,
-    lessonCount,
-    projectPaidGross,
-    lessonPaidGross,
-    projectPendingGross,
-    lessonPendingGross,
   };
 }

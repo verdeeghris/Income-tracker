@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   CalendarDays,
   Check,
@@ -18,14 +18,16 @@ import {
 } from '../constants';
 import {
   WEEKDAYS_SHORT,
+  addDays,
   addMonths,
+  daysInMonth,
+  formatDateKey,
   formatLongDate,
   formatMonthTitle,
   getMonthMatrix,
   parseDateKey,
 } from '../dateUtils';
 import { formatMoney, netOf } from '../finance';
-import { presetMonthEnd, presetNextWeeks } from '../copyDates';
 
 function Field({ label, children }) {
   return (
@@ -38,12 +40,31 @@ function Field({ label, children }) {
   );
 }
 
-export function CopyPicker({ anchorKey, selectedSet, onToggle, itemLabel = 'проектами' }) {
+export function presetNextWeeks(anchorKey) {
+  return [1, 2, 3, 4].map((week) => addDays(anchorKey, week * 7));
+}
+
+export function presetMonthEnd(anchorKey) {
+  const date = parseDateKey(anchorKey);
+  const lastDay = daysInMonth(date.getFullYear(), date.getMonth());
+  const result = [];
+  for (let day = date.getDate() + 1; day <= lastDay; day += 1) {
+    result.push(
+      formatDateKey(new Date(date.getFullYear(), date.getMonth(), day))
+    );
+  }
+  return result;
+}
+
+export function CopyPicker({ anchorKey, selectedSet, onToggle }) {
   const [viewKey, setViewKey] = useState(anchorKey);
   const view = parseDateKey(viewKey);
   const viewYear = view.getFullYear();
   const viewMonth = view.getMonth();
-  const weeks = getMonthMatrix(viewYear, viewMonth);
+  const weeks = useMemo(
+    () => getMonthMatrix(viewYear, viewMonth),
+    [viewYear, viewMonth]
+  );
 
   const navButtonClass =
     'rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/10 dark:hover:text-white';
@@ -108,7 +129,7 @@ export function CopyPicker({ anchorKey, selectedSet, onToggle, itemLabel = 'пр
       </div>
 
       <p className="mt-2.5 text-center text-[11px] font-medium text-stone-400 dark:text-zinc-500">
-        Копии создаются независимыми {itemLabel}
+        Копии создаются независимыми проектами
       </p>
     </div>
   );
@@ -124,7 +145,6 @@ export default function ProjectModal({
   onDelete,
 }) {
   const isEdit = Boolean(instance);
-  const projectTemplates = templates.filter((item) => item.type === 'project');
 
   const [title, setTitle] = useState(instance?.title || '');
   const [amount, setAmount] = useState(
@@ -223,10 +243,10 @@ export default function ProjectModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isEdit && projectTemplates.length > 0 && (
+          {!isEdit && templates.length > 0 && (
             <Field label="Использовать прошлый проект">
               <div className="flex gap-1.5 overflow-x-auto p-1 scrollbar-none">
-                {projectTemplates.map((template) => {
+                {templates.map((template) => {
                   const templateColor = paletteOf(template.color);
                   return (
                     <button
@@ -285,7 +305,7 @@ export default function ProjectModal({
             </div>
             {Number(amount) > 0 && (
               <p className="mt-1.5 text-[11px] font-medium text-stone-500 dark:text-zinc-400">
-                На р��ки после налога {TAX_PERCENT}% — примерно{' '}
+                На руки после налога {TAX_PERCENT}% — примерно{' '}
                 {formatMoney(netOf(Number(amount)))}
               </p>
             )}

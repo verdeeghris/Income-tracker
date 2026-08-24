@@ -7,7 +7,7 @@ export function getInitialTheme() {
   try {
     const saved = window.localStorage.getItem(STORAGE_KEYS.theme);
     if (saved === 'light' || saved === 'dark') return saved;
-  } catch {
+  } catch (error) {
     /* недоступен localStorage — смотрим системную тему */
   }
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -25,7 +25,7 @@ export function useTheme() {
     applyThemeClass(theme);
     try {
       window.localStorage.setItem(STORAGE_KEYS.theme, theme);
-    } catch {
+    } catch (error) {
       /* игнорируем */
     }
   }, [theme]);
