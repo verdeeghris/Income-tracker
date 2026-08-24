@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Резервируем место под вертикальный скроллбар всегда.
-   Благодаря этому страница не «прыгает» влево-вправо, когда скроллбар
-   появляется (режим «Месяц») или исчезает (блокировка скролла модалкой). */
-html {
-  scrollbar-gutter: stable;
-}
 
 :root {
   /* Чуть приглушённый тёплый фон — белые карточки не «резали» глаза */
@@ -117,8 +111,7 @@ input, select, textarea { font-size: 16px; line-height: 1.4; }
 
 @media (min-width: 640px) {
   .modal-overlay { align-items: center; }
-  .modal-sheet {   max-height: calc(100dvh - 3rem);
-  padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); padding: 1.5rem; }
+  .modal-sheet { max-height: calc(100dvh - 3rem); padding: 1.5rem; }
 }
 
 .animate-fade-in {
@@ -144,14 +137,4 @@ input, select, textarea { font-size: 16px; line-height: 1.4; }
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-body {
-  background-color: #F3F4F6; /* Серый контрастный фон для светлой темы */
-  color: #111827;
-}
-
-html.dark body {
-  background-color: #09090B; /* Тёмный фон */
-  color: #F9FAFB;
 }

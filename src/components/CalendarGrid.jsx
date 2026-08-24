@@ -31,7 +31,7 @@ function ProjectChip({ instance, isDark, onClick }) {
       >
         {instance.title}
       </span>
-      <span className='shrink-0 text-[10px] font-extrabold tabular-nums opacity-90'>
+      <span className='shrink-0 text-[10px] font-extrabold tabular-nums leading-4 opacity-90'>
         {formatMoney(instance.amount)}
       </span>
     </button>
